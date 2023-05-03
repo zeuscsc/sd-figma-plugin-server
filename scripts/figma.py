@@ -82,8 +82,7 @@ def figma_api(_: gr.Blocks, app: FastAPI):
     async def post_canny(image_str: str = Body(...), annotator_resolution: int = Body(...), canny_low_threshold: int = Body(...), 
                          canny_high_threshold: int = Body(...)):
         import modules.shared as shared
-        import psutil
-        if shared.tecky_auth.api_available() is False and  psutil.cpu_percent() > 80:
+        if shared.tecky_auth.demo_available() is False:
             return {"error": "Server Busy"}
         import base64
         import io
@@ -93,7 +92,9 @@ def figma_api(_: gr.Blocks, app: FastAPI):
         _, buffer = cv2.imencode('.png', c_img)
         base64_image = base64.b64encode(buffer).decode('utf-8')
         return {"image": base64_image}
-    
+    @app.post("/clare/change_background")
+    async def post_change_background(image_str: str = Body(...), background_str: str = Body(...)):
+        import modules.shared as shared
     
 try:
     import modules.script_callbacks as script_callbacks
