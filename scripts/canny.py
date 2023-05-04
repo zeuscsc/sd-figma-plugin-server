@@ -2,8 +2,7 @@ import modules.scripts as scripts
 import gradio as gr
 from fastapi import FastAPI, Body
 from modules.processing import Processed, StableDiffusionProcessingImg2Img, process_images, images, fix_seed
-
-from modules.processing import Processed
+from modules.utils import import_or_install
 from modules.shared import opts, cmd_opts, state
 import numpy as np
 import cv2
@@ -52,7 +51,7 @@ def canny(img, res=512, thr_a=100, thr_b=200, **kwargs):
 class Script(scripts.Script):
 
     def title(self):
-        return "Figma"
+        return "Canny Edge Detection"
 
     def show(self, is_img2img):
         return cmd_opts.allow_code
@@ -81,9 +80,6 @@ def figma_api(_: gr.Blocks, app: FastAPI):
     @app.post("/figma/canny")
     async def post_canny(image_str: str = Body(...), annotator_resolution: int = Body(...), canny_low_threshold: int = Body(...), 
                          canny_high_threshold: int = Body(...)):
-        import modules.shared as shared
-        if shared.tecky_auth.demo_available() is False:
-            return {"error": "Server Busy"}
         import base64
         import io
         image_bytes = base64.b64decode(image_str)
@@ -92,9 +88,6 @@ def figma_api(_: gr.Blocks, app: FastAPI):
         _, buffer = cv2.imencode('.png', c_img)
         base64_image = base64.b64encode(buffer).decode('utf-8')
         return {"image": base64_image}
-    @app.post("/clare/change_background")
-    async def post_change_background(image_str: str = Body(...), background_str: str = Body(...)):
-        import modules.shared as shared
     
 try:
     import modules.script_callbacks as script_callbacks
