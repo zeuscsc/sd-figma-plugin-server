@@ -85,7 +85,7 @@ def figma_api(_: gr.Blocks, app: FastAPI):
         image_bytes = base64.b64decode(image_str)
         image=cv2.cvtColor(np.array(Image.open(io.BytesIO(image_bytes),formats=["PNG"]).convert('RGB')), cv2.COLOR_RGB2BGR)
         c_img=canny(image, annotator_resolution, canny_low_threshold, canny_high_threshold)
-        cv2.invert(c_img, c_img)
+        c_img=cv2.bitwise_not(c_img)
         _, buffer = cv2.imencode('.png', c_img)
         base64_image = base64.b64encode(buffer).decode('utf-8')
         return {"image": base64_image}
